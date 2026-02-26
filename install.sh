@@ -2,12 +2,24 @@
 
 echo "🚀 Starting piCast installation"
 
-echo "📦 Updating packages and installing required packages"
-sudo apt-get update
-sudo apt-get install -y npm python3-flask python3-flask-cors python3-dotenv pipx
+echo "📦 Installing required packages"
+sudo apt-get install -y curl unzip python3-flask python3-flask-cors python3-dotenv pipx
 pipx ensurepath
 
 export PATH="$PATH:$HOME/.local/bin"
+
+echo "📦 Checking Bun installation..."
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+if ! command -v bun &> /dev/null; then
+    echo "⚡ Bun isn't installed. Starting quick installation..."
+    curl -fsSL https://bun.sh/install | bash
+    export PATH="$BUN_INSTALL/bin:$PATH"
+    echo "✅ Bun installed correctly."
+else
+    echo "✅ Bun is already installed."
+fi
 
 echo "📦 Installing catt and yt-dlp"
 pipx install catt || echo "catt is already installed"

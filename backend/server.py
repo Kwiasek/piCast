@@ -16,7 +16,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return render_template_string(HTML_TEMPLATE)
+    return app.send_static_file('index.html')
 
 @app.route('/status')
 def check_status():
