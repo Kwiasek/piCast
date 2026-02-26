@@ -2,11 +2,12 @@ import { useState, useEffect, type ReactNode } from "react"
 import { Cast, Rewind, Play, FastForward, Square, RotateCcw } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { Action } from "./types/actions"
+import type { Status } from "./types/status"
 
-const API_URL = "http://192.168.0.22:8080/api"
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 function App() {
-  const [status, setStatus] = useState('checking')
+  const [status, setStatus] = useState<Status>('checking')
   const [videoUrl, setVideoUrl] = useState('')
 
   useEffect(() => {
@@ -32,13 +33,7 @@ function App() {
     }
   }
 
-  const sendCommand = async (action: Action) => {
-    try {
-      await fetch(`${API_URL}/cmd/${action}`, { method: 'POST'})
-    } catch (error) {
-      console.error("Connection error", error)
-    }
-}
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center p-6 max-w-md mx-auto">
@@ -78,14 +73,15 @@ function App() {
 
         {/* Controls Section */}
         <section className="grid grid-cols-3 gap-4">
-          <ControlButton icon={<Rewind size={32} />} label="Rewind" action="rewind"/>
+          <ControlButton icon={<Rewind size={32} />} label="Rewind" action="rewind" status={status}/>
           <ControlButton 
             icon={<Play size={40} fill="currentColor" />} 
             label="Play" 
             primary 
             action="play_toggle"
+            status={status}
           />
-          <ControlButton icon={<FastForward size={32} />} label="Fast Forward" action="ffwd" />
+          <ControlButton icon={<FastForward size={32} />} label="Fast Forward" action="ffwd" status={status} />
         </section>
 
         <section className="grid grid-cols-2 gap-4">
@@ -94,11 +90,13 @@ function App() {
             label="Stop" 
             className="text-red-500" 
             action="stop"
+            status={status}
           />
           <ControlButton 
             icon={<RotateCcw size={28} />} 
             label="Restart" 
             action="restart"
+            status={status}
           />
         </section>
       </main>
@@ -107,14 +105,14 @@ function App() {
       <footer className="mt-auto py-12 text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-zinc-600 text-xs">
           <div className={`w-2 h-2 rounded-full ${status == 'online' ? 'bg-emerald-500' : status == 'offline' ? 'bg-red-600' : 'bg-gray-500'} animate-pulse`} />
-          {
+          <span>{
             status == 'online' ? 
             "Connected to Chromecast" :
             status == 'offline' ?
             "Couldn't connect to Chromecast" :
             "Connecting to Chromecast"
           }
-          <span>Connected to Chromecast</span>
+          </span>
         </div>
         <p className="text-zinc-700 text-[10px] uppercase tracking-widest">
           © 2026 Kwiasek
@@ -124,20 +122,28 @@ function App() {
   )
 }
 
-
+const sendCommand = async (action: Action) => {
+    try {
+      await fetch(`${API_URL}/cmd/${action}`, { method: 'POST'})
+    } catch (error) {
+      console.error("Connection error", error)
+    }
+}
 
 function ControlButton({ 
   icon, 
   label, 
   primary = false, 
   className = "",
-  handleSendCommand
+  action,
+  status
 }: { 
   icon: ReactNode; 
   label: string; 
   primary?: boolean;
   className?: string;
-  handleSendCommand,
+  action: Action,
+  status: Status
 }) {
   return (
     <motion.button
@@ -148,7 +154,8 @@ function ControlButton({
         ${primary ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'bg-[#1a1a1a] text-zinc-300 hover:bg-[#222]'}
         ${className}
       `}
-      onClick={() => handleSendCommand}
+      onClick={() => sendCommand(action)}
+      disabled={status != "online" }
     >
       {icon}
     </motion.button>
