@@ -18,7 +18,7 @@ CORS(app)
 def index():
     return app.send_static_file('index.html')
 
-@app.route('/status')
+@app.route('/api/status')
 def check_status():
     try:
         result = subprocess.run([CATT_CMD, "scan"], capture_output=True, text=True, timeout=10)
@@ -30,7 +30,7 @@ def check_status():
     except Exception:
         return jsonify({"status": "offline"}), 500
 
-@app.route('/cast', methods=['POST'])
+@app.route('/api/cast', methods=['POST'])
 def cast_video():
     data = request.json
     url = data.get('video_url', '').strip() if data else ''
@@ -46,7 +46,7 @@ def cast_video():
             
     return jsonify({"error": "Missing link"}), 400
 
-@app.route('/cmd/<action>')
+@app.route('/api/cmd/<action>')
 def execute_command(action):
     valid_actions = ["play_toggle", "ffwd", "rewind", "restart", "stop"]
     

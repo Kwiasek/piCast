@@ -4,7 +4,9 @@ import { motion } from 'motion/react';
 import type { Action } from "./types/actions"
 import type { Status } from "./types/status"
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = window.APP_CONFIG.API_URL !== "__API_URL_PLACEHOLDER__" 
+  ? window.APP_CONFIG.API_URL 
+  : "http://localhost:8080/api";
 
 function App() {
   const [status, setStatus] = useState<Status>('checking')

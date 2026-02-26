@@ -8,19 +8,6 @@ pipx ensurepath
 
 export PATH="$PATH:$HOME/.local/bin"
 
-echo "📦 Checking Bun installation..."
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-if ! command -v bun &> /dev/null; then
-    echo "⚡ Bun isn't installed. Starting quick installation..."
-    curl -fsSL https://bun.sh/install | bash
-    export PATH="$BUN_INSTALL/bin:$PATH"
-    echo "✅ Bun installed correctly."
-else
-    echo "✅ Bun is already installed."
-fi
-
 echo "📦 Installing catt and yt-dlp"
 pipx install catt || echo "catt is already installed"
 pipx install yt-dlp || echo "yt-dlp is already installed"
@@ -59,15 +46,14 @@ cat <<EOF > frontend/.env
 VITE_API_URL=http://$USER_IP:$BACKEND_PORT/api
 EOF
 
-echo "🏗️ Building frontend (React/Vite)..."
-cd frontend
-npm install
-npm run build
-cd ..
+docker pull kwiasek/picast-frontend:latest
 
-echo "🚚 Moving frontend build to backend..."
-rm -rf backend/static
-cp -r frontend/dist backend/static
+docker run -d \
+  --name pilot-frontend \
+  --restart always \
+  -p 8081:80 \
+  -e API_URL="http://$USER_IP:$BACKEND_PORT/api" \
+  kwiasek/picast-frontend:latest
 
 echo ""
 echo "🛠️ STARTUP CONFIGURATION"
@@ -77,7 +63,6 @@ INSTALL_SERVICE=${INSTALL_SERVICE:-T}
 if [[ "$INSTALL_SERVICE" =~ ^[TtYy]$ ]]; then
     echo "🔧 Generating systemd service file..."
     
-    # Pobranie absolutnej ścieżki i nazwy użytkownika
     BACKEND_DIR=$(realpath backend)
     CURRENT_USER=$USER
     SERVICE_FILE="/tmp/picast.service"
@@ -98,10 +83,8 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 
-    # Przeniesienie pliku do systemd z uprawnieniami sudo
     sudo mv $SERVICE_FILE /etc/systemd/system/picast.service
     
-    # Przeładowanie i uruchomienie usługi
     sudo systemctl daemon-reload
     sudo systemctl enable picast.service
     sudo systemctl start picast.service
