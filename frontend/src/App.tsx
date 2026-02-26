@@ -4,6 +4,14 @@ import { motion } from 'motion/react';
 import type { Action } from "./types/actions"
 import type { Status } from "./types/status"
 
+declare global {
+  interface Window {
+    APP_CONFIG: {
+      API_URL: string
+    }
+  }
+}
+
 const API_URL = window.APP_CONFIG.API_URL !== "__API_URL_PLACEHOLDER__" 
   ? window.APP_CONFIG.API_URL 
   : "http://localhost:8080/api";
