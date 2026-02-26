@@ -24,7 +24,7 @@ fi
 echo "✅ Found catt: $CATT_PATH"
 echo "✅ Found yt-dlp: $YTDLP_PATH"
 
-DEFAULT_IP=$(hostname -I | awk '{print$1}')
+DEFAULT_IP=$(ip route get 1.1.1.1 | awk '{print $7}' | head -n 1)
 
 echo ""
 echo "⚙️ NETWORK SETTINGS"
