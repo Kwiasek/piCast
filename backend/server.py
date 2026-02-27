@@ -34,7 +34,7 @@ def background_cast_task(url):
     try:
         process = subprocess.Popen(
             [YTDLP_CMD, "-g", "-f", "best", url],
-            stdout=subprocess.PIPE
+            stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
 
