@@ -16,7 +16,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return app.send_static_file('index.html')
+    return redirect("0.0.0.0:8081", code=302)
 
 @app.route('/api/status')
 def check_status():
