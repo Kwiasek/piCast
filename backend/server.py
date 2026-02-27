@@ -12,11 +12,7 @@ PORT = int(os.environ.get("FLASK_PORT", 8080))
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
 
-CORS(app)
-
-@app.route('/')
-def index():
-    return redirect("0.0.0.0:8081", code=302)
+CORS(app)   
 
 @app.route('/api/status')
 def check_status():
