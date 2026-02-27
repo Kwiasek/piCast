@@ -15,7 +15,7 @@ pipx install yt-dlp || echo "yt-dlp is already installed"
 CATT_PATH=$(which catt)
 YTDLP_PATH=$(which yt-dlp)
 
-if [ -z "$CATT_PATH"] || [ -z "$YTDLP_PATH"]; then
+if [ -z "$CATT_PATH" ] || [ -z "$YTDLP_PATH" ]; then
   echo "❌ Error: Couldn't find path to catt or yt-dlp."
   echo "Make sure pipx is working correctly."
   exit 1
@@ -46,10 +46,14 @@ cat <<EOF > frontend/.env
 VITE_API_URL=http://$USER_IP:$BACKEND_PORT/api
 EOF
 
+echo "Pulling docker image"
+
 docker pull kwiasek/picast-frontend:latest
 
+echo "Starting docker container"
+
 docker run -d \
-  --name pilot-frontend \
+  --name picast-frontend \
   --restart always \
   -p 8081:80 \
   -e API_URL="http://$USER_IP:$BACKEND_PORT/api" \
