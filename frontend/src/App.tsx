@@ -14,11 +14,16 @@ declare global {
 
 const API_URL = window.APP_CONFIG.API_URL !== "__API_URL_PLACEHOLDER__" 
   ? window.APP_CONFIG.API_URL 
-  : "http://localhost:8080/api";
+  : "http://xdd:8080/api";
 
 function App() {
   const [status, setStatus] = useState<Status>('checking')
   const [videoUrl, setVideoUrl] = useState('')
+
+  console.log(window)
+  console.log(window.APP_CONFIG)
+  console.log(window.APP_CONFIG.API_URL)
+  console.log(API_URL)
 
   useEffect(() => {
     fetch(`${API_URL}/status`)
